@@ -1,6 +1,7 @@
 import { generateToken } from "../lib/utils.js"
 import User from "../models/user.model.js"
 import bcrypt from 'bcryptjs'
+
 export const signup = async (req, res)=>{
   const {fullname, email, password}=req.body
   try{
@@ -47,10 +48,41 @@ export const signup = async (req, res)=>{
   }
 }
 
-export const login = (req, res)=>{
-  res.send('login route')
+/*gets the email and the passwords from the fields,then finds the user with that email, if email doesnt exist it gives error, if email exists it compares the password user sent and the hashed password stored in the database, if passwords match then it generates a token and sends it to the client*/
+export const login = async (req, res)=>{
+  const {email, password}= req.body
+  try{
+    //check if user exists
+    const user=await User.findOne({email})
+    if(!user){
+      return res.status(400).json({message: 'Invalid Credentials!'})
+    }
+
+    //check if password is correct
+    const isPasswordCorrect=await bcrypt.compare(password, user.password)
+    if(!isPasswordCorrect){
+      return res.status(400).json({message: 'Invalid Credentials!'})
+    }
+
+    generateToken(user._id, res)
+    res.status(200).json({
+      _id: user._id,
+      fullname: user.fullname,
+      email: user.email,
+      profilePic: user.profilePic
+    })
+  }catch(error){
+    console.log("Error in login controller", error.message)
+    res.status(500).json({message: 'Internal server error'})
+  }
 }
 
 export const logout = (req, res)=>{
-  res.send('logout route')
+  try{
+    res.cookie('jwt', '', {maxAge: 0,})
+    res.status(200).json({message: 'Logged out successfully'})
+  }catch(error){
+    console.log("Error in logout controller", error.message)
+    res.status(500).json({message: 'Internal server error'})
+  }
 }
