@@ -33,13 +33,13 @@ const Navbar = () => {
 
             {authUser && (
               <>
-                <Link to={"/profile"} className={`btn btn-sm gap-2`}>
-                  <User className="size-5" />
+                <Link to={"/profile"} className={`btn btn-sm gap-1.5`}>
+                  <User className="w-5 h-4" />
                   <span className="hidden sm:inline">Profile</span>
                 </Link>
 
-                <button className="flex gap-2 items-center" onClick={logout}>
-                  <LogOut className="size-5" />
+                <button className="flex gap-1.5 items-center cursor-pointer hover:scale-110 hover:text-blue-500 transition-all duration-200 ease-in-out" onClick={logout}>
+                  <LogOut className="w-5 h-4" />
                   <span className="hidden sm:inline">Logout</span>
                 </button>
               </>
